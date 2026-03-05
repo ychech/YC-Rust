@@ -220,11 +220,28 @@ cargo test --test integration
 cargo tarpaulin --out Html
 ```
 
-## 📚 教程
+## 📚 完整教程（10章）
 
-- [01. 区块结构](tutorial/01-block-structure/)
-- [02. 哈希计算](tutorial/02-hash/)
-- [03. 区块链](tutorial/03-blockchain/)
+### 基础篇
+- [01. 区块基础](tutorial-full/01-basic/) - 区块结构、哈希计算、创世区块
+- [02. 密码学基础](tutorial-full/02-crypto/) - SHA256、Merkle Tree、地址生成
+- [03. 区块链核心](tutorial-full/03-blockchain/) - 链式结构、POW挖矿、难度调整
+
+### 网络篇
+- [04. P2P网络](tutorial-full/04-network/) - libp2p、节点发现、消息传播
+- [05. 共识机制](tutorial-full/05-consensus/) - Raft选举、领导者、心跳机制
+
+### 高级篇
+- [06. 数据存储](tutorial-full/06-storage/) - RocksDB、UTXO索引、状态存储
+- [07. 虚拟机](tutorial-full/07-vm/) - WASM运行时、Gas计费、合约调用
+- [08. 智能合约](tutorial-full/08-contracts/) - Token、NFT、DEX合约开发
+
+### 生产篇
+- [09. 安全加固](tutorial-full/09-security/) - 重放保护、签名验证、权限控制
+- [10. API与部署](tutorial-full/10-api/) - REST API、Docker部署、监控
+
+### 快速开始
+- [快速开始指南](tutorial-full/QUICK_START.md) - 5分钟上手
 
 ## 🤝 贡献
 
