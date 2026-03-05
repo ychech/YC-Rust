@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChengDAO - 去中心化治理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.05);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 24px; font-weight: 700; color: #00d4ff; }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2cbf 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 32px;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+        .stat-card p { color: #888; }
+        .proposal-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+        .proposal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .proposal-id {
+            background: #00d4ff;
+            color: black;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .status-active { background: #22c55e; }
+        .status-pending { background: #f59e0b; }
+        .status-executed { background: #6b7280; }
+        .proposal-title {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .proposal-desc {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .vote-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .vote-for {
+            background: #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .vote-against {
+            background: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .vote-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .vote-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .vote-for-btn { background: #22c55e; color: white; }
+        .vote-against-btn { background: #ef4444; color: white; }
+        .new-proposal {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2cbf 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+        .new-proposal h2 {
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🏛️ ChengDAO</div>
+        <button class="btn btn-primary">连接钱包 (8000 GOV)</button>
+    </nav>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <h3>12</h3>
+                <p>总提案</p>
+            </div>
+            <div class="stat-card">
+                <h3>8</h3>
+                <p>已通过</p>
+            </div>
+            <div class="stat-card">
+                <h3>45.2K</h3>
+                <p>总投票权</p>
+            </div>
+            <div class="stat-card">
+                <h3>40%</h3>
+                <p>参与阈值</p>
+            </div>
+        </div>
+
+        <div class="new-proposal">
+            <h2>✨ 创建新提案</h2>
+            <input type="text" placeholder="提案标题">
+            <textarea placeholder="提案描述..."></textarea>
+            <button class="btn" style="background: white; color: #7b2cbf; width: 100%; padding: 16px;">
+                提交提案 (需要1000 GOV)
+            </button>
+        </div>
+
+        <h2 style="margin-bottom: 20px;">📋 活跃提案</h2>
+
+        <div class="proposal-card">
+            <div class="proposal-header">
+                <span class="proposal-id">#13</span>
+                <span class="status status-active">投票中</span>
+            </div>
+            <h3 class="proposal-title">增加出块奖励至100 cETH</h3>
+            <p class="proposal-desc">将每个区块的挖矿奖励从50 cETH增加到100 cETH，以激励更多节点参与网络。</p>
+            <div class="vote-bar">
+                <div class="vote-for" style="width: 65%;">65% 支持</div>
+                <div class="vote-against" style="width: 35%;">35% 反对</div>
+            </div>
+            <div class="vote-actions">
+                <button class="vote-btn vote-for-btn" onclick="vote(1)">👍 支持</button>
+                <button class="vote-btn vote-against-btn" onclick="vote(0)">👎 反对</button>
+            </div>
+        </div>
+
+        <div class="proposal-card">
+            <div class="proposal-header">
+                <span class="proposal-id">#12</span>
+                <span class="status status-pending">等待执行</span>
+            </div>
+            <h3 class="proposal-title">降低交易手续费至0.1%</h3>
+            <p class="proposal-desc">将Swap手续费从0.3%降低至0.1%，提升竞争力。</p>
+            <div class="vote-bar">
+                <div class="vote-for" style="width: 82%;">82% 支持</div>
+                <div class="vote-against" style="width: 18%;">18% 反对</div>
+            </div>
+            <p style="color: #888; margin-top: 12px;">⏰ 时间锁: 还有23小时可执行</p>
+        </div>
+
+        <div class="proposal-card">
+            <div class="proposal-header">
+                <span class="proposal-id">#11</span>
+                <span class="status status-executed">已执行</span>
+            </div>
+            <h3 class="proposal-title">添加NFT市场功能</h3>
+            <p class="proposal-desc">部署NFT合约，支持铸造、交易、拍卖功能。</p>
+            <div class="vote-bar">
+                <div class="vote-for" style="width: 91%;">91% 支持</div>
+                <div class="vote-against" style="width: 9%;">9% 反对</div>
+            </div>
+            <p style="color: #22c55e; margin-top: 12px;">✅ 已于区块 #45678 执行</p>
+        </div>
+    </div>
+
+    <script>
+        function vote(support) {
+            const type = support ? '支持' : '反对';
+            alert(`投票${type}成功！\n\n实际项目调用智能合约`);
+        }
+    </script>
+</body>
+</html>
