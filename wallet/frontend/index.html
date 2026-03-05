@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YRUST Wallet - 安全链上钱包</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3e;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-hover);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .network-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .network-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        /* 资产卡片 */
+        .asset-card {
+            background: var(--gradient);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .asset-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .asset-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .asset-balance {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .asset-value {
+            font-size: 1.125rem;
+            opacity: 0.8;
+        }
+
+        .asset-address {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        /* 操作按钮 */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 0.75rem;
+        }
+
+        .action-label {
+            font-weight: 600;
+        }
+
+        /* 代币列表 */
+        .token-list {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .token-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .token-list-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .add-token-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .token-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .token-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .token-item:last-child {
+            border-bottom: none;
+        }
+
+        .token-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .token-info {
+            flex: 1;
+        }
+
+        .token-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .token-symbol {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .token-balance {
+            text-align: right;
+        }
+
+        .token-amount {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .token-value {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            box-shadow: none;
+        }
+
+        /* 助记词显示 */
+        .mnemonic-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .mnemonic-word {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .mnemonic-index {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        /* 警告 */
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .warning-icon {
+            color: var(--warning);
+            font-size: 1.25rem;
+        }
+
+        .warning-text {
+            font-size: 0.875rem;
+            color: var(--warning);
+        }
+
+        /* 交易历史 */
+        .tx-list {
+            margin-top: 2rem;
+        }
+
+        .tx-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+
+        .tx-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .tx-icon.out {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .tx-info {
+            flex: 1;
+        }
+
+        .tx-type {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .tx-time {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .tx-amount {
+            text-align: right;
+        }
+
+        .tx-value {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .tx-value.out {
+            color: var(--text-primary);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="logo">👛 YRUST Wallet</div>
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="showPage('assets')">
+                <span>💎</span> 资产
+            </div>
+            <div class="nav-item" onclick="showPage('send')">
+                <span>📤</span> 发送
+            </div>
+            <div class="nav-item" onclick="showPage('receive')">
+                <span>📥</span> 接收
+            </div>
+            <div class="nav-item" onclick="showPage('swap')">
+                <span>💱</span> 兑换
+            </div>
+            <div class="nav-item" onclick="showPage('history')">
+                <span>📜</span> 历史
+            </div>
+            <div class="nav-item" onclick="showPage('settings')">
+                <span>⚙️</span> 设置
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <!-- 头部 -->
+        <header class="header">
+            <h1>我的资产</h1>
+            <div class="network-selector">
+                <div class="network-dot"></div>
+                <span>YRUST Mainnet</span>
+                <span>▼</span>
+            </div>
+        </header>
+
+        <!-- 资产卡片 -->
+        <div class="asset-card">
+            <div class="asset-label">总资产</div>
+            <div class="asset-balance" id="totalBalance">0.00 YRU</div>
+            <div class="asset-value">≈ $0.00 USD</div>
+            <div class="asset-address" onclick="copyAddress()">
+                <span id="walletAddress">未连接钱包</span>
+                <span>📋</span>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <div class="action-btn" onclick="showModal('sendModal')">
+                <div class="action-icon">📤</div>
+                <div class="action-label">发送</div>
+            </div>
+            <div class="action-btn" onclick="showModal('receiveModal')">
+                <div class="action-icon">📥</div>
+                <div class="action-label">接收</div>
+            </div>
+            <div class="action-btn" onclick="connectDEX()">
+                <div class="action-icon">💱</div>
+                <div class="action-label">兑换</div>
+            </div>
+            <div class="action-btn" onclick="showModal('buyModal')">
+                <div class="action-icon">💳</div>
+                <div class="action-label">购买</div>
+            </div>
+        </div>
+
+        <!-- 代币列表 -->
+        <div class="token-list">
+            <div class="token-list-header">
+                <span class="token-list-title">代币</span>
+                <button class="add-token-btn" onclick="showModal('addTokenModal')">+ 添加代币</button>
+            </div>
+            <div id="tokenList">
+                <div class="token-item">
+                    <div class="token-icon">Y</div>
+                    <div class="token-info">
+                        <div class="token-name">YRUST</div>
+                        <div class="token-symbol">YRU</div>
+                    </div>
+                    <div class="token-balance">
+                        <div class="token-amount" id="yruBalance">0.00</div>
+                        <div class="token-value">$0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近交易 -->
+        <div class="tx-list">
+            <h3 style="margin-bottom: 1rem;">最近交易</h3>
+            <div id="txHistory">
+                <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    暂无交易记录
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 创建钱包模态框 -->
+    <div class="modal" id="createWalletModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">创建新钱包</h2>
+                <button class="modal-close" onclick="closeModal('createWalletModal')">×</button>
+            </div>
+            <div class="warning-box">
+                <span class="warning-icon">⚠️</span>
+                <span class="warning-text">请安全保存助记词，这是恢复钱包的唯一方式。不要截图或分享给任何人！</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">设置密码</label>
+                <input type="password" class="form-input" id="newWalletPassword" placeholder="至少8位字符">
+            </div>
+            <div class="form-group">
+                <label class="form-label">确认密码</label>
+                <input type="password" class="form-input" id="confirmPassword" placeholder="再次输入密码">
+            </div>
+            <button class="btn" onclick="createWallet()">创建钱包</button>
+        </div>
+    </div>
+
+    <!-- 显示助记词模态框 -->
+    <div class="modal" id="showMnemonicModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">备份助记词</h2>
+                <button class="modal-close" onclick="closeModal('showMnemonicModal')">×</button>
+            </div>
+            <div class="warning-box">
+                <span class="warning-icon">⚠️</span>
+                <span class="warning-text">按正确顺序写下这些单词。如果丢失，将无法恢复钱包！</span>
+            </div>
+            <div class="mnemonic-grid" id="mnemonicWords">
+                <!-- 动态生成 -->
+            </div>
+            <button class="btn" onclick="confirmBackup()">我已备份</button>
+        </div>
+    </div>
+
+    <!-- 恢复钱包模态框 -->
+    <div class="modal" id="restoreWalletModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">恢复钱包</h2>
+                <button class="modal-close" onclick="closeModal('restoreWalletModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">助记词</label>
+                <textarea class="form-input" id="restoreMnemonic" placeholder="输入12个助记词，用空格分隔"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">设置新密码</label>
+                <input type="password" class="form-input" id="restorePassword" placeholder="至少8位字符">
+            </div>
+            <button class="btn" onclick="restoreWallet()">恢复钱包</button>
+        </div>
+    </div>
+
+    <!-- 发送模态框 -->
+    <div class="modal" id="sendModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">发送代币</h2>
+                <button class="modal-close" onclick="closeModal('sendModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">接收地址</label>
+                <input type="text" class="form-input" id="sendTo" placeholder="输入地址">
+            </div>
+            <div class="form-group">
+                <label class="form-label">金额</label>
+                <input type="number" class="form-input" id="sendAmount" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Gas 费用</label>
+                <select class="form-input" id="gasPrice">
+                    <option value="slow">慢 (0.001 YRU)</option>
+                    <option value="normal" selected>标准 (0.002 YRU)</option>
+                    <option value="fast">快 (0.005 YRU)</option>
+                </select>
+            </div>
+            <button class="btn" onclick="sendTransaction()">确认发送</button>
+        </div>
+    </div>
+
+    <!-- 接收模态框 -->
+    <div class="modal" id="receiveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">接收代币</h2>
+                <button class="modal-close" onclick="closeModal('receiveModal')">×</button>
+            </div>
+            <div style="text-align: center; padding: 2rem;">
+                <div style="width: 200px; height: 200px; background: white; margin: 0 auto 1rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: black;">
+                    QR CODE
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">扫描上方二维码或复制地址</p>
+                <div class="form-input" style="font-family: monospace; text-align: center;" id="receiveAddress">
+                    1YourAddressHere...
+                </div>
+            </div>
+            <button class="btn" onclick="copyAddress()">复制地址</button>
+        </div>
+    </div>
+
+    <script>
+        // 钱包状态
+        let wallet = null;
+        let mnemonic = '';
+        let address = '';
+        let balance = 0;
+
+        // 初始化
+        window.onload = function() {
+            checkWallet();
+        };
+
+        // 检查是否有钱包
+        function checkWallet() {
+            const savedWallet = localStorage.getItem('yrust_wallet');
+            if (!savedWallet) {
+                showModal('createWalletModal');
+            } else {
+                loadWallet(savedWallet);
+            }
+        }
+
+        // 创建钱包
+        function createWallet() {
+            const password = document.getElementById('newWalletPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (password.length < 8) {
+                alert('密码至少8位');
+                return;
+            }
+            if (password !== confirm) {
+                alert('密码不匹配');
+                return;
+            }
+
+            // 生成助记词
+            mnemonic = generateMnemonic();
+            address = generateAddress(mnemonic);
+            
+            // 保存
+            localStorage.setItem('yrust_wallet', JSON.stringify({
+                address,
+                encrypted: btoa(mnemonic + ':' + password)
+            }));
+
+            // 显示助记词
+            showMnemonic(mnemonic);
+            closeModal('createWalletModal');
+            showModal('showMnemonicModal');
+        }
+
+        // 生成助记词 (简化版)
+        function generateMnemonic() {
+            const words = ['abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract', 'absurd', 'abuse', 'access', 'accident'];
+            return words.sort(() => Math.random() - 0.5).join(' ');
+        }
+
+        // 生成地址
+        function generateAddress(mnemonic) {
+            return '1' + btoa(mnemonic).substring(0, 33);
+        }
+
+        // 显示助记词
+        function showMnemonic(words) {
+            const grid = document.getElementById('mnemonicWords');
+            const wordList = words.split(' ');
+            grid.innerHTML = wordList.map((word, i) => `
+                <div class="mnemonic-word">
+                    <div class="mnemonic-index">${i + 1}</div>
+                    <div>${word}</div>
+                </div>
+            `).join('');
+        }
+
+        // 确认备份
+        function confirmBackup() {
+            closeModal('showMnemonicModal');
+            updateUI();
+        }
+
+        // 恢复钱包
+        function restoreWallet() {
+            const words = document.getElementById('restoreMnemonic').value.trim();
+            const password = document.getElementById('restorePassword').value;
+
+            if (words.split(' ').length !== 12) {
+                alert('请输入12个助记词');
+                return;
+            }
+
+            mnemonic = words;
+            address = generateAddress(mnemonic);
+
+            localStorage.setItem('yrust_wallet', JSON.stringify({
+                address,
+                encrypted: btoa(mnemonic + ':' + password)
+            }));
+
+            closeModal('restoreWalletModal');
+            updateUI();
+        }
+
+        // 加载钱包
+        function loadWallet(data) {
+            const wallet = JSON.parse(data);
+            address = wallet.address;
+            updateUI();
+        }
+
+        // 更新界面
+        function updateUI() {
+            document.getElementById('walletAddress').textContent = address;
+            document.getElementById('receiveAddress').textContent = address;
+            document.getElementById('totalBalance').textContent = '1,234.56 YRU';
+            document.getElementById('yruBalance').textContent = '1,234.56';
+        }
+
+        // 发送交易
+        function sendTransaction() {
+            const to = document.getElementById('sendTo').value;
+            const amount = document.getElementById('sendAmount').value;
+
+            if (!to || !amount) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            alert(`发送 ${amount} YRU 到 ${to}`);
+            closeModal('sendModal');
+        }
+
+        // 复制地址
+        function copyAddress() {
+            navigator.clipboard.writeText(address);
+            alert('地址已复制');
+        }
+
+        // 连接 DEX
+        function connectDEX() {
+            window.open('../dex/frontend/index.html', '_blank');
+        }
+
+        // 显示模态框
+        function showModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        // 关闭模态框
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // 切换页面
+        function showPage(page) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+        }
+    </script>
+</body>
+</html>

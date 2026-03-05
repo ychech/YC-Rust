@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # 主节点
+  yrust-node:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: yrust-node
+    restart: unless-stopped
+    ports:
+      - "3000:3000"  # API 端口
+      - "8000:8000"  # P2P 端口
+    volumes:
+      - yrust-data:/app/data
+    environment:
+      - RUST_LOG=info
+      - NODE_ENV=production
+    networks:
+      - yrust-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: yrust-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../web:/usr/share/nginx/html:ro
+    depends_on:
+      - yrust-node
+    networks:
+      - yrust-network
+
+volumes:
+  yrust-data:
+    driver: local
+
+networks:
+  yrust-network:
+    driver: bridge

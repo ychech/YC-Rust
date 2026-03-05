@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  # 主节点
+  yrust-node:
+    build: .
+    container_name: yrust-node
+    restart: unless-stopped
+    ports:
+      - "8080:8080"    # HTTP API
+      - "9090:9090"    # P2P 网络
+      - "9091:9091"    # 管理接口
+    volumes:
+      - ./data:/data
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    environment:
+      - RUST_LOG=info
+      - NODE_ENV=production
+      - P2P_BOOTSTRAP=/dns4/bootstrap.yrust.chain/tcp/9090
+    networks:
+      - yrust-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 区块浏览器
+  explorer:
+    image: nginx:alpine
+    container_name: yrust-explorer
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+      - ./config/nginx-explorer.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - yrust-node
+    networks:
+      - yrust-network
+
+  # 钱包服务
+  wallet:
+    image: nginx:alpine
+    container_name: yrust-wallet
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    volumes:
+      - ./wallet/frontend:/usr/share/nginx/html:ro
+    networks:
+      - yrust-network
+
+  # DEX 前端
+  dex:
+    image: nginx:alpine
+    container_name: yrust-dex
+    restart: unless-stopped
+    ports:
+      - "3002:80"
+    volumes:
+      - ./dex/frontend:/usr/share/nginx/html:ro
+    networks:
+      - yrust-network
+
+  # 官网
+  website:
+    image: nginx:alpine
+    container_name: yrust-website
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./website:/usr/share/nginx/html:ro
+      - ./config/nginx-website.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - yrust-network
+
+  # 管理后台
+  admin:
+    image: nginx:alpine
+    container_name: yrust-admin
+    restart: unless-stopped
+    ports:
+      - "3003:80"
+    volumes:
+      - ./admin:/usr/share/nginx/html:ro
+    networks:
+      - yrust-network
+
+  # Prometheus 监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: yrust-prometheus
+    restart: unless-stopped
+    ports:
+      - "9092:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - yrust-network
+
+  # Grafana 可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: yrust-grafana
+    restart: unless-stopped
+    ports:
+      - "3004:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - yrust-network
+
+networks:
+  yrust-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

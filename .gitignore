@@ -1,1 +1,36 @@
-/target
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data
+data/
+*.db
+*.log
+logs/
+
+# Secrets
+.env
+*.pem
+*.key
+config/secrets/
+
+# Build artifacts
+dist/
+build/
+*.wasm
+
+# Node
+node_modules/
+package-lock.json

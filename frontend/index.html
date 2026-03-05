@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YRUST Chain - 下一代区块链浏览器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3e;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --gradient-2: linear-gradient(135deg, #22c55e 0%, #14b8a6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+
+        .wallet-btn {
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 搜索区 */
+        .search-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .search-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            padding-right: 140px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+
+        .stat-card.success::before {
+            background: var(--gradient-2);
+        }
+
+        .stat-card.warning::before {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        /* 内容区 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .section-content {
+            padding: 1rem;
+        }
+
+        /* 区块列表 */
+        .block-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .block-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .block-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .block-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .block-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .block-height {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .block-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .block-meta {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .block-time {
+            margin-bottom: 0.25rem;
+        }
+
+        .block-txs {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* 交易列表 */
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tx-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .tx-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .tx-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .tx-icon.out {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .tx-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tx-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+
+        .tx-addresses {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .tx-amount {
+            text-align: right;
+        }
+
+        .tx-value {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .tx-value.out {
+            color: var(--text-primary);
+        }
+
+        .tx-fee {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .search-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">🔗</div>
+                YRUST Chain
+            </div>
+            <div class="nav-links">
+                <a class="nav-link active" onclick="showSection('explorer')">浏览器</a>
+                <a class="nav-link" onclick="showSection('wallet')">钱包</a>
+                <a class="nav-link" onclick="showSection('dex')">DEX</a>
+                <a class="nav-link" onclick="showSection('nft')">NFT</a>
+                <button class="wallet-btn" onclick="connectWallet()">连接钱包</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <!-- 搜索区 -->
+        <section class="search-section animate-in">
+            <h1 class="search-title">YRUST Chain Explorer</h1>
+            <p class="search-subtitle">探索下一代高性能区块链</p>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" 
+                       placeholder="搜索区块高度、哈希、交易ID或地址...">
+                <button class="search-btn" onclick="search()">搜索</button>
+            </div>
+        </section>
+
+        <!-- 统计 -->
+        <div class="stats-grid animate-in">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-label">区块高度</div>
+                <div class="stat-value" id="blockHeight">-</div>
+                <div class="stat-change">+1 新块</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">💎</div>
+                <div class="stat-label">总交易数</div>
+                <div class="stat-value" id="totalTxs">-</div>
+                <div class="stat-change">+12 新交易</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-label">TPS</div>
+                <div class="stat-value" id="tps">1,024</div>
+                <div class="stat-change">网络健康</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">活跃节点</div>
+                <div class="stat-value" id="peers">-</div>
+                <div class="stat-change">P2P 网络</div>
+            </div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="content-grid animate-in">
+            <!-- 最新区块 -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span>📦</span>
+                        最新区块
+                    </h2>
+                    <a href="#" class="view-all">查看全部 →</a>
+                </div>
+                <div class="section-content">
+                    <div class="block-list" id="blockList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 最新交易 -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span>💸</span>
+                        最新交易
+                    </h2>
+                    <a href="#" class="view-all">查看全部 →</a>
+                </div>
+                <div class="section-content">
+                    <div class="tx-list" id="txList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // 加载数据
+        async function loadData() {
+            try {
+                // 加载统计
+                const statsRes = await fetch(`${API_URL}/stats`);
+                const stats = await statsRes.json();
+                
+                if (stats.success) {
+                    document.getElementById('blockHeight').textContent = 
+                        stats.data.height.toLocaleString();
+                    document.getElementById('totalTxs').textContent = 
+                        stats.data.total_transactions.toLocaleString();
+                    document.getElementById('peers').textContent = '12';
+                }
+
+                // 加载区块
+                const blocksRes = await fetch(`${API_URL}/blocks`);
+                const blocks = await blocksRes.json();
+                
+                if (blocks.success) {
+                    renderBlocks(blocks.data.blocks);
+                }
+
+                // 加载交易
+                const mempoolRes = await fetch(`${API_URL}/mempool`);
+                const mempool = await mempoolRes.json();
+                
+                if (mempool.success) {
+                    renderTransactions(mempool.data);
+                }
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                showError();
+            }
+        }
+
+        // 渲染区块列表
+        function renderBlocks(blocks) {
+            const html = blocks.slice(0, 6).map(block => `
+                <div class="block-item" onclick="viewBlock(${block.height})">
+                    <div class="block-icon">#${block.height}</div>
+                    <div class="block-info">
+                        <div class="block-height">区块 #${block.height}</div>
+                        <div class="block-hash">${block.hash.substring(0, 20)}...</div>
+                    </div>
+                    <div class="block-meta">
+                        <div class="block-time">${timeAgo(block.timestamp)}</div>
+                        <div class="block-txs">${block.tx_count} 笔交易</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('blockList').innerHTML = html;
+        }
+
+        // 渲染交易列表
+        function renderTransactions(txs) {
+            if (txs.length === 0) {
+                document.getElementById('txList').innerHTML = 
+                    '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">暂无待处理交易</div>';
+                return;
+            }
+
+            const html = txs.slice(0, 6).map(tx => `
+                <div class="tx-item" onclick="viewTx('${tx.id}')">
+                    <div class="tx-icon">${tx.is_coinbase ? '⛏️' : '💸'}</div>
+                    <div class="tx-info">
+                        <div class="tx-id">${tx.id.substring(0, 16)}...</div>
+                        <div class="tx-addresses">
+                            ${tx.inputs.length} 输入 → ${tx.outputs.length} 输出
+                        </div>
+                    </div>
+                    <div class="tx-amount">
+                        <div class="tx-value">${formatAmount(tx.outputs[0]?.value || 0)} YRU</div>
+                        <div class="tx-fee">手续费: 0.001</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('txList').innerHTML = html;
+        }
+
+        // 格式化金额
+        function formatAmount(amount) {
+            return (amount / 100000000).toFixed(4);
+        }
+
+        // 时间格式化
+        function timeAgo(timestamp) {
+            const seconds = Math.floor(Date.now() / 1000 - timestamp);
+            if (seconds < 60) return `${seconds} 秒前`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} 分钟前`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)} 小时前`;
+            return `${Math.floor(seconds / 86400)} 天前`;
+        }
+
+        // 搜索
+        function search() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            if (/^\d+$/.test(query)) {
+                viewBlock(parseInt(query));
+            } else if (query.length === 64) {
+                viewTx(query);
+            } else {
+                viewAddress(query);
+            }
+        }
+
+        // 查看区块
+        function viewBlock(height) {
+            alert(`查看区块 #${height}`);
+        }
+
+        // 查看交易
+        function viewTx(id) {
+            alert(`查看交易 ${id}`);
+        }
+
+        // 查看地址
+        function viewAddress(address) {
+            alert(`查看地址 ${address}`);
+        }
+
+        // 连接钱包
+        function connectWallet() {
+            alert('连接钱包功能开发中...');
+        }
+
+        // 切换页面
+        function showSection(section) {
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // 显示错误
+        function showError() {
+            document.getElementById('blockList').innerHTML = 
+                '<div style="text-align: center; padding: 2rem; color: var(--error);">连接节点失败，请确保节点正在运行</div>';
+            document.getElementById('txList').innerHTML = 
+                '<div style="text-align: center; padding: 2rem; color: var(--error);">连接节点失败</div>';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setInterval(loadData, 10000);
+        });
+
+        // 回车搜索
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') search();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YRUST Chain 白皮书</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            padding: 4rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+        }
+        
+        .meta {
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        h2 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 2rem 0 1rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .abstract {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .feature-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        code {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', monospace;
+            font-size: 0.875rem;
+        }
+        
+        pre {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .roadmap {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary) 0%, #ec4899 100%);
+        }
+        
+        .roadmap-item {
+            position: relative;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+        }
+        
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 1.75rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--bg-dark);
+        }
+        
+        .roadmap-item.completed::before {
+            background: #22c55e;
+        }
+        
+        .roadmap-item.in-progress::before {
+            background: #f59e0b;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+        
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .status-in-progress {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .status-planned {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 2rem;
+            transition: transform 0.3s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 4rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>YRUST Chain 白皮书</h1>
+            <p class="subtitle">下一代高性能、安全、可扩展的区块链平台</p>
+            <div class="meta">
+                <p>版本：v1.0 | 日期：2024年3月 | 语言：中文</p>
+            </div>
+            <a href="../docs/WHITEPAPER.md" class="download-btn" download>📥 下载完整白皮书</a>
+        </header>
+
+        <div class="abstract">
+            <h3>摘要</h3>
+            <p>YRUST Chain 是一个基于 Rust 构建的高性能区块链平台，采用工作量证明（POW）共识机制，支持智能合约和去中心化应用。通过创新的架构设计，实现了每秒 1000+ 笔交易的处理能力，同时保持去中心化和安全性。</p>
+        </div>
+
+        <h2>1. 核心特性</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>⚡ 高性能</h4>
+                <p>1000+ TPS，3秒确认，满足商业应用需求</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔒 安全可靠</h4>
+                <p>Rust内存安全，经过形式化验证的智能合约</p>
+            </div>
+            <div class="feature-card">
+                <h4>💰 低成本</h4>
+                <p>平均交易费用低于 $0.001，小额支付可行</p>
+            </div>
+            <div class="feature-card">
+                <h4>🛠️ 开发者友好</h4>
+                <p>使用Rust编写智能合约，WASM执行环境</p>
+            </div>
+        </div>
+
+        <h2>2. 技术参数</h2>
+        
+        <table>
+            <tr>
+                <th>参数</th>
+                <th>值</th>
+            </tr>
+            <tr>
+                <td>共识机制</td>
+                <td>工作量证明 (POW)</td>
+            </tr>
+            <tr>
+                <td>区块时间</td>
+                <td>~10 秒</td>
+            </tr>
+            <tr>
+                <td>区块大小</td>
+                <td>2 MB</td>
+            </tr>
+            <tr>
+                <td>交易确认</td>
+                <td>6 个区块</td>
+            </tr>
+            <tr>
+                <td>总供应量</td>
+                <td>21,000,000 YRU</td>
+            </tr>
+            <tr>
+                <td>哈希算法</td>
+                <td>SHA256 (双重)</td>
+            </tr>
+            <tr>
+                <td>签名算法</td>
+                <td>ECDSA (secp256k1)</td>
+            </tr>
+            <tr>
+                <td>虚拟机</td>
+                <td>WASM (wasmtime)</td>
+            </tr>
+        </table>
+
+        <h2>3. 经济模型</h2>
+        
+        <h3>代币分配</h3>
+        <table>
+            <tr>
+                <th>用途</th>
+                <th>比例</th>
+                <th>数量 (YRU)</th>
+            </tr>
+            <tr>
+                <td>挖矿奖励</td>
+                <td>90%</td>
+                <td>18,900,000</td>
+            </tr>
+            <tr>
+                <td>开发者基金</td>
+                <td>5%</td>
+                <td>1,050,000</td>
+            </tr>
+            <tr>
+                <td>社区激励</td>
+                <td>3%</td>
+                <td>630,000</td>
+            </tr>
+            <tr>
+                <td>早期投资者</td>
+                <td>2%</td>
+                <td>420,000</td>
+            </tr>
+        </table>
+
+        <h3>挖矿奖励减半</h3>
+        <table>
+            <tr>
+                <th>周期</th>
+                <th>区块高度</th>
+                <th>奖励 (YRU)</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0 - 210,000</td>
+                <td>50</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>210,001 - 420,000</td>
+                <td>25</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>420,001 - 630,000</td>
+                <td>12.5</td>
+            </tr>
+            <tr>
+                <td>4+</td>
+                <td>630,001+</td>
+                <td>持续减半</td>
+            </tr>
+        </table>
+
+        <h2>4. 发展路线图</h2>
+        
+        <div class="roadmap">
+            <div class="roadmap-item completed">
+                <h4>Phase 1: 基础 <span class="status-badge status-completed">已完成</span></h4>
+                <p>核心区块链、POW共识、基础钱包、区块浏览器</p>
+            </div>
+            <div class="roadmap-item completed">
+                <h4>Phase 2: 智能合约 <span class="status-badge status-completed">已完成</span></h4>
+                <p>WASM虚拟机、合约部署、Token/NFT/DEX合约</p>
+            </div>
+            <div class="roadmap-item in-progress">
+                <h4>Phase 3: 生态扩展 <span class="status-badge status-in-progress">进行中</span></h4>
+                <p>跨链桥接、隐私交易、Layer 2、移动端钱包</p>
+            </div>
+            <div class="roadmap-item">
+                <h4>Phase 4: 规模化 <span class="status-badge status-planned">计划中</span></h4>
+                <p>分片技术、零知识证明、企业解决方案</p>
+            </div>
+        </div>
+
+        <h2>5. 技术架构</h2>
+        
+        <pre><code>┌─────────────────────────────────────────┐
+│              应用层 (DApps)              │
+│     DeFi    NFT    Game    DAO         │
+├─────────────────────────────────────────┤
+│          合约层 (Smart Contracts)        │
+├─────────────────────────────────────────┤
+│          执行层 (WASM VM)                │
+├─────────────────────────────────────────┤
+│     核心层 (Blockchain/Consensus/P2P)   │
+├─────────────────────────────────────────┤
+│          数据层 (RocksDB)                │
+├─────────────────────────────────────────┤
+│          安全层 (Crypto/ACL)             │
+└─────────────────────────────────────────┘</code></pre>
+
+        <h2>6. 安全机制</h2>
+        
+        <ul style="color: var(--text-secondary); margin-left: 2rem;">
+            <li>双重 SHA256 哈希，防止长度扩展攻击</li>
+            <li>ECDSA 数字签名，确保交易不可否认</li>
+            <li>重放攻击防护，时间戳+Nonce机制</li>
+            <li>速率限制，防止DDoS攻击</li>
+            <li>51%攻击检测，算力集中监控</li>
+            <li>链重组限制，防止深度重组攻击</li>
+        </ul>
+
+        <h2>7. 团队与社区</h2>
+        
+        <p>YRUST Chain 由一支经验丰富的区块链开发团队打造，核心成员来自顶级科技公司和开源社区。</p>
+        
+        <h3>联系方式</h3>
+        <ul style="color: var(--text-secondary); margin-left: 2rem;">
+            <li>官网：https://yrust.chain</li>
+            <li>GitHub：https://github.com/yrust/yrust-chain</li>
+            <li>文档：https://docs.yrust.chain</li>
+            <li>邮箱：contact@yrust.chain</li>
+        </ul>
+
+        <footer>
+            <p>© 2024 YRUST Chain Foundation. All rights reserved.</p>
+            <p>本白皮书仅供参考，不构成投资建议。</p>
+        </footer>
+    </div>
+</body>
+</html>

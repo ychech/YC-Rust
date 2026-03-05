@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YRust Chain Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #2a2f4a;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        
+        .stat-label {
+            color: #8b92b4;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 0.5rem;
+        }
+        
+        .section {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #2a2f4a;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .block-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .block-item {
+            background: #0a0e27;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #2a2f4a;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .block-item:hover {
+            border-color: #667eea;
+            background: #12162d;
+        }
+        
+        .block-height {
+            background: #667eea;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .block-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .block-hash {
+            font-family: monospace;
+            color: #8b92b4;
+            font-size: 0.875rem;
+        }
+        
+        .block-time {
+            color: #5a5f7a;
+            font-size: 0.75rem;
+        }
+        
+        .block-txs {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: #0a0e27;
+            border: 1px solid #2a2f4a;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd6;
+        }
+        
+        .btn-secondary {
+            background: #2a2f4a;
+        }
+        
+        .btn-secondary:hover {
+            background: #3a3f5a;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #8b92b4;
+        }
+        
+        .error {
+            background: #ff4757;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .tx-item {
+            background: #0a0e27;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #2a2f4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tx-id {
+            font-family: monospace;
+            color: #667eea;
+        }
+        
+        .tx-value {
+            color: #2ed573;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .block-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🔷 YRust Chain Explorer</h1>
+        <p>高性能 Rust 原生区块链浏览器</p>
+    </header>
+    
+    <div class="container">
+        <!-- 搜索 -->
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" 
+                   placeholder="搜索区块高度、哈希、交易ID或地址...">
+            <button class="btn" onclick="search()">搜索</button>
+        </div>
+        
+        <!-- 统计 -->
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <div class="stat-label">区块高度</div>
+                <div class="stat-value" id="blockHeight">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总交易数</div>
+                <div class="stat-value" id="totalTxs">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">挖矿难度</div>
+                <div class="stat-value" id="difficulty">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">UTXO 数量</div>
+                <div class="stat-value" id="utxoCount">-</div>
+            </div>
+        </div>
+        
+        <!-- 最新区块 -->
+        <div class="section">
+            <h2>📦 最新区块</h2>
+            <div class="block-list" id="blockList">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+        
+        <!-- 最新交易 -->
+        <div class="section">
+            <h2>💸 最新交易</h2>
+            <div class="tx-list" id="txList">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    document.getElementById('blockHeight').textContent = data.height.toLocaleString();
+                    document.getElementById('totalTxs').textContent = data.total_transactions.toLocaleString();
+                    document.getElementById('difficulty').textContent = data.difficulty;
+                    document.getElementById('utxoCount').textContent = data.utxo_count.toLocaleString();
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+        
+        // 加载区块列表
+        async function loadBlocks() {
+            try {
+                const response = await fetch(`${API_URL}/blocks`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const blocks = result.data.blocks;
+                    const html = blocks.map(block => `
+                        <div class="block-item" onclick="viewBlock(${block.height})">
+                            <div class="block-height">#${block.height}</div>
+                            <div class="block-info">
+                                <div class="block-hash">${block.hash.substring(0, 32)}...</div>
+                                <div class="block-time">${new Date(block.timestamp * 1000).toLocaleString()}</div>
+                            </div>
+                            <div class="block-txs">${block.tx_count} 笔交易</div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('blockList').innerHTML = html;
+                }
+            } catch (error) {
+                document.getElementById('blockList').innerHTML = 
+                    '<div class="error">加载失败，请确保节点正在运行</div>';
+            }
+        }
+        
+        // 加载交易列表
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/mempool`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const txs = result.data;
+                    if (txs.length === 0) {
+                        document.getElementById('txList').innerHTML = 
+                            '<div style="color: #5a5f7a; text-align: center;">暂无待处理交易</div>';
+                        return;
+                    }
+                    
+                    const html = txs.slice(0, 10).map(tx => `
+                        <div class="tx-item">
+                            <span class="tx-id">${tx.id.substring(0, 20)}...</span>
+                            <span class="tx-value">${(tx.outputs[0]?.value / 100000000).toFixed(4)} YRU</span>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('txList').innerHTML = html;
+                }
+            } catch (error) {
+                document.getElementById('txList').innerHTML = 
+                    '<div class="error">加载失败</div>';
+            }
+        }
+        
+        // 搜索
+        async function search() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            // 判断查询类型
+            if (/^\d+$/.test(query)) {
+                // 区块高度
+                viewBlock(parseInt(query));
+            } else if (query.startsWith('0x') || query.length === 64) {
+                // 交易哈希或区块哈希
+                alert('查看交易/区块: ' + query);
+            } else if (query.startsWith('1') || query.startsWith('3')) {
+                // 地址
+                viewAddress(query);
+            } else {
+                alert('未知查询类型');
+            }
+        }
+        
+        // 查看区块详情
+        function viewBlock(height) {
+            alert('查看区块 #' + height);
+            // 实际实现：跳转到区块详情页或显示模态框
+        }
+        
+        // 查看地址
+        function viewAddress(address) {
+            alert('查看地址: ' + address);
+        }
+        
+        // 初始化
+        function init() {
+            loadStats();
+            loadBlocks();
+            loadTransactions();
+            
+            // 定时刷新
+            setInterval(() => {
+                loadStats();
+                loadBlocks();
+                loadTransactions();
+            }, 10000);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // 回车搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') search();
+        });
+    </script>
+</body>
+</html>

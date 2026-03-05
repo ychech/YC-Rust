@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YRUST 管理后台</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* 登录页 */
+        .login-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1e1b4b 100%);
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--border);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo h1 {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* 管理后台 */
+        .admin-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--primary);
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* 内容区 */
+        .content {
+            padding: 2rem;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.blue { background: rgba(99, 102, 241, 0.1); }
+        .stat-icon.green { background: rgba(34, 197, 94, 0.1); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.1); }
+        .stat-icon.red { background: rgba(239, 68, 68, 0.1); }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+
+        /* 图表区 */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .chart-placeholder {
+            height: 250px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* 表格 */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-small:hover {
+            background: var(--primary-dark);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status.active {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .status.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status.inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status.active .status-dot { background: var(--success); }
+        .status.pending .status-dot { background: var(--warning); }
+        .status.inactive .status-dot { background: var(--danger); }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* 页面切换 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页 -->
+    <div class="login-page" id="loginPage">
+        <div class="login-box">
+            <div class="login-logo">
+                <h1>🔗 YRUST 管理后台</h1>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" id="username" placeholder="输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" id="password" placeholder="输入密码" required>
+                </div>
+                <button type="submit" class="btn">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理后台 -->
+    <div class="admin-container" id="adminContainer">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🔗 YRUST 管理后台</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-item active" data-page="dashboard">
+                    <span>📊</span> 仪表盘
+                </a>
+                <a class="nav-item" data-page="blocks">
+                    <span>🧱</span> 区块管理
+                </a>
+                <a class="nav-item" data-page="transactions">
+                    <span>💸</span> 交易管理
+                </a>
+                <a class="nav-item" data-page="nodes">
+                    <span>🌐</span> 节点管理
+                </a>
+                <a class="nav-item" data-page="contracts">
+                    <span>📜</span> 合约管理
+                </a>
+                <a class="nav-item" data-page="users">
+                    <span>👥</span> 用户管理
+                </a>
+                <a class="nav-item" data-page="settings">
+                    <span>⚙️</span> 系统设置
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div class="user-details">
+                        <div class="user-name">Admin</div>
+                        <div class="user-role">超级管理员</div>
+                    </div>
+                    <button class="btn-icon" onclick="logout()">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h1 class="header-title" id="pageTitle">仪表盘</h1>
+                <div class="header-actions">
+                    <button class="btn-icon">🔔</button>
+                    <button class="btn-icon">⚙️</button>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- 仪表盘 -->
+                <div class="page active" id="dashboard">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">区块高度</span>
+                                <div class="stat-icon blue">🧱</div>
+                            </div>
+                            <div class="stat-value" id="blockHeight">1,234,567</div>
+                            <div class="stat-change positive">+128 过去24小时</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">总交易量</span>
+                                <div class="stat-icon green">💸</div>
+                            </div>
+                            <div class="stat-value" id="totalTx">8.5M</div>
+                            <div class="stat-change positive">+12.5% 本月</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">活跃节点</span>
+                                <div class="stat-icon orange">🌐</div>
+                            </div>
+                            <div class="stat-value" id="activeNodes">42</div>
+                            <div class="stat-change positive">+5 新节点</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">活跃地址</span>
+                                <div class="stat-icon red">👥</div>
+                            </div>
+                            <div class="stat-value" id="activeAddrs">125.3K</div>
+                            <div class="stat-change positive">+8.2% 本周</div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">交易趋势</h3>
+                                <select class="btn-small">
+                                    <option>近7天</option>
+                                    <option>近30天</option>
+                                    <option>近90天</option>
+                                </select>
+                            </div>
+                            <div class="chart-placeholder">
+                                📈 交易趋势图表
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">节点分布</h3>
+                            </div>
+                            <div class="chart-placeholder">
+                                🥧 节点分布饼图
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">最近交易</h3>
+                            <button class="btn-small">查看全部</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>交易哈希</th>
+                                    <th>类型</th>
+                                    <th>金额</th>
+                                    <th>状态</th>
+                                    <th>时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTxTable">
+                                <tr>
+                                    <td>0x7f8a...3e2d</td>
+                                    <td>转账</td>
+                                    <td>1,000 YRU</td>
+                                    <td><span class="status active"><span class="status-dot"></span>已确认</span></td>
+                                    <td>2分钟前</td>
+                                </tr>
+                                <tr>
+                                    <td>0x9b2c...8f1a</td>
+                                    <td>合约调用</td>
+                                    <td>500 YRU</td>
+                                    <td><span class="status active"><span class="status-dot"></span>已确认</span></td>
+                                    <td>5分钟前</td>
+                                </tr>
+                                <tr>
+                                    <td>0x3d4e...7c5b</td>
+                                    <td>质押</td>
+                                    <td>10,000 YRU</td>
+                                    <td><span class="status pending"><span class="status-dot"></span>确认中</span></td>
+                                    <td>8分钟前</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 区块管理 -->
+                <div class="page" id="blocks">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">区块列表</h3>
+                            <div>
+                                <input type="text" class="form-input" style="display:inline-block;width:200px;margin-right:0.5rem;" placeholder="搜索区块高度/哈希">
+                                <button class="btn-small">搜索</button>
+                            </div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>高度</th>
+                                    <th>哈希</th>
+                                    <th>交易数</th>
+                                    <th>矿工</th>
+                                    <th>奖励</th>
+                                    <th>时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blocksTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 交易管理 -->
+                <div class="page" id="transactions">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">交易列表</h3>
+                            <div>
+                                <select class="btn-small" style="margin-right:0.5rem;">
+                                    <option>全部类型</option>
+                                    <option>转账</option>
+                                    <option>合约调用</option>
+                                    <option>质押</option>
+                                </select>
+                                <button class="btn-small">导出</button>
+                            </div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>哈希</th>
+                                    <th>类型</th>
+                                    <th>发送方</th>
+                                    <th>接收方</th>
+                                    <th>金额</th>
+                                    <th>手续费</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="txTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 节点管理 -->
+                <div class="page" id="nodes">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">节点列表</h3>
+                            <button class="btn-small">添加节点</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>节点ID</th>
+                                    <th>IP地址</th>
+                                    <th>地区</th>
+                                    <th>版本</th>
+                                    <th>延迟</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nodesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 合约管理 -->
+                <div class="page" id="contracts">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">智能合约</h3>
+                            <button class="btn-small">部署合约</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>合约地址</th>
+                                    <th>名称</th>
+                                    <th>类型</th>
+                                    <th>调用次数</th>
+                                    <th>创建者</th>
+                                    <th>创建时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contractsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 用户管理 -->
+                <div class="page" id="users">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">系统用户</h3>
+                            <button class="btn-small">添加用户</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>角色</th>
+                                    <th>最后登录</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 系统设置 -->
+                <div class="page" id="settings">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">节点配置</h3>
+                        </div>
+                        <div style="padding: 1rem 0;">
+                            <div class="form-group">
+                                <label class="form-label">网络ID</label>
+                                <input type="text" class="form-input" value="yrust-mainnet-1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">出块间隔 (秒)</label>
+                                <input type="number" class="form-input" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">区块奖励 (YRU)</label>
+                                <input type="number" class="form-input" value="50">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">难度系数</label>
+                                <input type="number" class="form-input" value="4">
+                            </div>
+                            <button class="btn" style="width:auto;padding:0.75rem 2rem;">保存配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 登录
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 模拟登录验证
+            if (username === 'admin' && password === 'admin123') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'flex';
+                loadDashboardData();
+            } else {
+                alert('用户名或密码错误');
+            }
+        });
+
+        // 退出登录
+        function logout() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('adminContainer').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // 页面切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const pageId = item.dataset.page;
+                
+                // 更新导航状态
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 切换页面
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                
+                // 更新标题
+                const titles = {
+                    dashboard: '仪表盘',
+                    blocks: '区块管理',
+                    transactions: '交易管理',
+                    nodes: '节点管理',
+                    contracts: '合约管理',
+                    users: '用户管理',
+                    settings: '系统设置'
+                };
+                document.getElementById('pageTitle').textContent = titles[pageId];
+                
+                // 加载对应数据
+                if (pageId === 'blocks') loadBlocksData();
+                else if (pageId === 'transactions') loadTxData();
+                else if (pageId === 'nodes') loadNodesData();
+                else if (pageId === 'contracts') loadContractsData();
+                else if (pageId === 'users') loadUsersData();
+            });
+        });
+
+        // 加载仪表盘数据
+        function loadDashboardData() {
+            // 模拟实时更新
+            setInterval(() => {
+                const height = 1234567 + Math.floor(Math.random() * 100);
+                document.getElementById('blockHeight').textContent = height.toLocaleString();
+            }, 5000);
+        }
+
+        // 加载区块数据
+        function loadBlocksData() {
+            const tbody = document.getElementById('blocksTable');
+            tbody.innerHTML = Array(10).fill(0).map((_, i) => `
+                <tr>
+                    <td>${1234567 - i}</td>
+                    <td>0x${Math.random().toString(16).slice(2, 10)}...${Math.random().toString(16).slice(2, 6)}</td>
+                    <td>${Math.floor(Math.random() * 100)}</td>
+                    <td>0x${Math.random().toString(16).slice(2, 12)}</td>
+                    <td>50 YRU</td>
+                    <td>${i}分钟前</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn">👁️</button>
+                            <button class="action-btn">📋</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载交易数据
+        function loadTxData() {
+            const tbody = document.getElementById('txTable');
+            const types = ['转账', '合约调用', '质押', 'NFT交易'];
+            tbody.innerHTML = Array(10).fill(0).map((_, i) => `
+                <tr>
+                    <td>0x${Math.random().toString(16).slice(2, 10)}...</td>
+                    <td>${types[Math.floor(Math.random() * types.length)]}</td>
+                    <td>0x${Math.random().toString(16).slice(2, 12)}</td>
+                    <td>0x${Math.random().toString(16).slice(2, 12)}</td>
+                    <td>${(Math.random() * 1000).toFixed(2)} YRU</td>
+                    <td>${(Math.random() * 0.01).toFixed(4)} YRU</td>
+                    <td><span class="status ${Math.random() > 0.2 ? 'active' : 'pending'}"><span class="status-dot"></span>${Math.random() > 0.2 ? '已确认' : '确认中'}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn">👁️</button>
+                            <button class="action-btn">📋</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载节点数据
+        function loadNodesData() {
+            const tbody = document.getElementById('nodesTable');
+            const regions = ['中国-北京', '中国-上海', '美国-加州', '德国-法兰克福', '新加坡', '日本-东京'];
+            tbody.innerHTML = Array(8).fill(0).map((_, i) => `
+                <tr>
+                    <td>12D3KooW${Math.random().toString(36).slice(2, 10).toUpperCase()}</td>
+                    <td>192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}</td>
+                    <td>${regions[Math.floor(Math.random() * regions.length)]}</td>
+                    <td>v1.0.${Math.floor(Math.random() * 10)}</td>
+                    <td>${Math.floor(Math.random() * 100)}ms</td>
+                    <td><span class="status active"><span class="status-dot"></span>在线</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn">👁️</button>
+                            <button class="action-btn">⚙️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载合约数据
+        function loadContractsData() {
+            const tbody = document.getElementById('contractsTable');
+            const types = ['Token', 'NFT', 'DEX', 'Staking', 'Governance'];
+            tbody.innerHTML = Array(8).fill(0).map((_, i) => `
+                <tr>
+                    <td>0x${Math.random().toString(16).slice(2, 12)}...</td>
+                    <td>Contract ${i + 1}</td>
+                    <td>${types[Math.floor(Math.random() * types.length)]}</td>
+                    <td>${Math.floor(Math.random() * 100000).toLocaleString()}</td>
+                    <td>0x${Math.random().toString(16).slice(2, 12)}</td>
+                    <td>${Math.floor(Math.random() * 30)}天前</td>
+                    <td><span class="status active"><span class="status-dot"></span>正常</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn">👁️</button>
+                            <button class="action-btn">⏸️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载用户数据
+        function loadUsersData() {
+            const tbody = document.getElementById('usersTable');
+            const roles = ['超级管理员', '管理员', '运营', '审计'];
+            tbody.innerHTML = Array(5).fill(0).map((_, i) => `
+                <tr>
+                    <td>${['admin', 'operator', 'auditor', 'viewer', 'dev'][i]}</td>
+                    <td>${roles[i] || '运营'}</td>
+                    <td>${Math.floor(Math.random() * 24)}小时前</td>
+                    <td><span class="status active"><span class="status-dot"></span>启用</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🔒</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

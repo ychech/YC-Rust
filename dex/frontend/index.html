@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YRUST DEX - 去中心化交易所</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3e;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+
+        .connect-btn {
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 交换卡片 */
+        .swap-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .swap-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        /* 输入框 */
+        .input-group {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .token-select {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-hover);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .token-select:hover {
+            background: var(--border);
+        }
+
+        .token-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient);
+        }
+
+        .token-symbol {
+            font-weight: 600;
+        }
+
+        .amount-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: right;
+            outline: none;
+        }
+
+        .amount-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* 交换按钮 */
+        .swap-arrow {
+            display: flex;
+            justify-content: center;
+            margin: -0.5rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .swap-arrow-btn {
+            background: var(--bg-hover);
+            border: 4px solid var(--bg-card);
+            color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .swap-arrow-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        /* 汇率信息 */
+        .rate-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .rate-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* 交换按钮 */
+        .swap-btn {
+            width: 100%;
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 1rem;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 1rem;
+        }
+
+        .swap-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .swap-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 流动性池 */
+        .pools-section {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .pools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .pool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .pool-card:hover {
+            border-color: var(--primary);
+        }
+
+        .pool-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .pool-icons {
+            display: flex;
+        }
+
+        .pool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-left: -10px;
+            border: 3px solid var(--bg-card);
+        }
+
+        .pool-icon:first-child {
+            margin-left: 0;
+        }
+
+        .pool-name {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .pool-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pool-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pool-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .pool-stat-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .pool-apr {
+            color: var(--success);
+        }
+
+        /* 添加流动性按钮 */
+        .add-liquidity-btn {
+            width: 100%;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .add-liquidity-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .swap-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">💱 YRUST DEX</div>
+            <div class="nav-links">
+                <a class="nav-link active">交易</a>
+                <a class="nav-link">流动性</a>
+                <a class="nav-link">农场</a>
+                <button class="connect-btn" onclick="connectWallet()">连接钱包</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- 交换卡片 -->
+        <div class="swap-card">
+            <div class="swap-header">
+                <h2 class="swap-title">兑换</h2>
+                <button class="settings-btn">⚙️</button>
+            </div>
+
+            <!-- 输入 -->
+            <div class="input-group">
+                <div class="input-header">
+                    <span>支付</span>
+                    <span>余额: 1,234.56 YRU</span>
+                </div>
+                <div class="input-wrapper">
+                    <div class="token-select" onclick="selectToken('from')">
+                        <div class="token-icon"></div>
+                        <span class="token-symbol">YRU</span>
+                        <span>▼</span>
+                    </div>
+                    <input type="number" class="amount-input" id="fromAmount" placeholder="0.0" oninput="calculateSwap()">
+                </div>
+            </div>
+
+            <!-- 交换箭头 -->
+            <div class="swap-arrow">
+                <div class="swap-arrow-btn" onclick="swapTokens()">⇅</div>
+            </div>
+
+            <!-- 输出 -->
+            <div class="input-group">
+                <div class="input-header">
+                    <span>接收</span>
+                    <span>余额: 0.00 ETH</span>
+                </div>
+                <div class="input-wrapper">
+                    <div class="token-select" onclick="selectToken('to')">
+                        <div class="token-icon" style="background: linear-gradient(135deg, #627eea 0%, #8799eb 100%);"></div>
+                        <span class="token-symbol">ETH</span>
+                        <span>▼</span>
+                    </div>
+                    <input type="number" class="amount-input" id="toAmount" placeholder="0.0" readonly>
+                </div>
+            </div>
+
+            <!-- 汇率信息 -->
+            <div class="rate-info">
+                <span>汇率</span>
+                <span class="rate-value">1 YRU = 0.002 ETH</span>
+            </div>
+
+            <div class="rate-info">
+                <span>滑点容差</span>
+                <span class="rate-value">0.5%</span>
+            </div>
+
+            <div class="rate-info">
+                <span>流动性提供者费用</span>
+                <span class="rate-value">0.3%</span>
+            </div>
+
+            <!-- 交换按钮 -->
+            <button class="swap-btn" id="swapBtn" onclick="executeSwap()">
+                连接钱包
+            </button>
+        </div>
+
+        <!-- 流动性池 -->
+        <section class="pools-section">
+            <h2 class="section-title">流动性池</h2>
+            <div class="pools-grid">
+                <div class="pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon">Y</div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #627eea 0%, #8799eb 100%);">E</div>
+                        </div>
+                        <div class="pool-name">YRU/ETH</div>
+                    </div>
+                    <div class="pool-stats">
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">TVL</span>
+                            <span class="pool-stat-value">$1.2M</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">APR</span>
+                            <span class="pool-stat-value pool-apr">24.5%</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">24h 交易量</span>
+                            <span class="pool-stat-value">$234K</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">手续费</span>
+                            <span class="pool-stat-value">0.3%</span>
+                        </div>
+                    </div>
+                    <button class="add-liquidity-btn">添加流动性</button>
+                </div>
+
+                <div class="pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon">Y</div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #2775ca 0%, #529de6 100%);">U</div>
+                        </div>
+                        <div class="pool-name">YRU/USDC</div>
+                    </div>
+                    <div class="pool-stats">
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">TVL</span>
+                            <span class="pool-stat-value">$2.8M</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">APR</span>
+                            <span class="pool-stat-value pool-apr">18.2%</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">24h 交易量</span>
+                            <span class="pool-stat-value">$567K</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">手续费</span>
+                            <span class="pool-stat-value">0.3%</span>
+                        </div>
+                    </div>
+                    <button class="add-liquidity-btn">添加流动性</button>
+                </div>
+
+                <div class="pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon">Y</div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #f7931a 0%, #f9b356 100%);">B</div>
+                        </div>
+                        <div class="pool-name">YRU/BTC</div>
+                    </div>
+                    <div class="pool-stats">
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">TVL</span>
+                            <span class="pool-stat-value">$890K</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">APR</span>
+                            <span class="pool-stat-value pool-apr">32.1%</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">24h 交易量</span>
+                            <span class="pool-stat-value">$123K</span>
+                        </div>
+                        <div class="pool-stat">
+                            <span class="pool-stat-label">手续费</span>
+                            <span class="pool-stat-value">0.3%</span>
+                        </div>
+                    </div>
+                    <button class="add-liquidity-btn">添加流动性</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let connected = false;
+        let fromToken = 'YRU';
+        let toToken = 'ETH';
+        let exchangeRate = 0.002;
+
+        function connectWallet() {
+            connected = !connected;
+            const btn = document.querySelector('.connect-btn');
+            const swapBtn = document.getElementById('swapBtn');
+            
+            if (connected) {
+                btn.textContent = '0x1234...5678';
+                swapBtn.textContent = '兑换';
+            } else {
+                btn.textContent = '连接钱包';
+                swapBtn.textContent = '连接钱包';
+            }
+        }
+
+        function calculateSwap() {
+            const fromAmount = parseFloat(document.getElementById('fromAmount').value) || 0;
+            const toAmount = fromAmount * exchangeRate * 0.997; // 扣除 0.3% 手续费
+            document.getElementById('toAmount').value = toAmount.toFixed(6);
+        }
+
+        function swapTokens() {
+            [fromToken, toToken] = [toToken, fromToken];
+            exchangeRate = 1 / exchangeRate;
+            
+            // 更新 UI
+            document.querySelectorAll('.token-symbol')[0].textContent = fromToken;
+            document.querySelectorAll('.token-symbol')[1].textContent = toToken;
+            
+            calculateSwap();
+        }
+
+        function selectToken(type) {
+            alert('选择代币: ' + type);
+        }
+
+        function executeSwap() {
+            if (!connected) {
+                connectWallet();
+                return;
+            }
+            
+            const fromAmount = document.getElementById('fromAmount').value;
+            if (!fromAmount || fromAmount <= 0) {
+                alert('请输入金额');
+                return;
+            }
+            
+            alert(`兑换 ${fromAmount} ${fromToken} 到 ${toToken}`);
+        }
+    </script>
+</body>
+</html>
