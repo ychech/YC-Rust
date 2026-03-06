@@ -4,9 +4,16 @@
   <img src="https://img.shields.io/badge/Rust-1.75+-orange.svg" alt="Rust Version">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
   <img src="https://img.shields.io/badge/AI-Powered-purple.svg" alt="AI Powered">
+  <img src="https://img.shields.io/badge/Tutorial-200+hrs-green.svg" alt="Tutorial">
+</p>
+
+<p align="center">
+  <b>🚀 不确定从哪开始？<a href="GUIDE.md">点击查看快速导航</a></b>
 </p>
 
 YRust Chain 是一个 **AI 驱动的智能公链**，将人工智能能力深度集成到区块链核心，提供智能挖矿、风控、查询、运维、合约生成和钱包助手六大 AI 功能。
+
+> 📚 **完整学习资源**: 48个Rust源文件 + 35个教程文档 + 12个前端项目，总计200+小时学习内容
 
 ## ✨ 核心特性
 
@@ -180,15 +187,24 @@ YRust/
 └── README.md
 ```
 
-## 📖 教程
+## 📖 学习资源
 
-- [AI 集成概述](tutorials/00_AI_Integration_Overview.md)
-- [AI 智能挖矿调度](tutorials/01_AI_Mining.md)
-- [AI 风控系统](tutorials/02_AI_Risk.md)
-- [AI 自然语言查询](tutorials/03_AI_NLP.md) *(待完善)*
-- [AI 智能运维](tutorials/04_AI_Ops.md) *(待完善)*
-- [AI 合约生成](tutorials/05_AI_Contract.md) *(待完善)*
-- [AI 钱包助手](tutorials/06_AI_Wallet.md) *(待完善)*
+### 🎯 快速导航
+- **[🚀 快速导航指南](GUIDE.md)** - 根据你的目标选择学习路径
+
+### 🤖 AI 教程
+- [AI 集成概述](tutorials/00_AI_Integration_Overview.md) - 6大AI模块介绍
+- [AI 智能挖矿调度](tutorials/01_AI_Mining.md) - 预测算法与策略
+- [AI 风控系统](tutorials/02_AI_Risk.md) - 风险检测与防护
+
+### 📚 完整课程
+- **[Rust 学习课程](RUST_LEARNING_CURRICULUM.md)** - 12阶段200+小时学习路径
+- **[学习资源总结](LEARNING_SUMMARY.md)** - 代码统计与资源索引
+
+### 🔧 开发文档
+- [白皮书](docs/WHITEPAPER.md) - 架构设计
+- [API 文档](docs/API.md) - 接口说明
+- [主网部署](docs/MAINNET_DEPLOYMENT.md) - 部署指南
 
 ## 🤝 贡献
 
