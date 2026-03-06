@@ -1,7 +1,11 @@
 [package]
 name = "yrust_chain"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
+authors = ["YRust Team"]
+description = "AI驱动的智能公链 - AI Powered Smart Blockchain"
+license = "MIT"
+repository = "https://github.com/ychech/YC-Rust"
 
 [dependencies]
 # 异步运行时
@@ -48,6 +52,9 @@ futures = "0.3.30"
 async-trait = "0.1.80"
 crossbeam-channel = "0.5.13"
 once_cell = "1.19.0"
+
+# AI 集成
+reqwest = { version = "0.12", features = ["json"], optional = true }
 
 # WASM 智能合约引擎 (简化版)
 wasmtime = "22.0.0"

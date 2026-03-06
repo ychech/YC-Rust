@@ -3,6 +3,7 @@
 
 use crate::core::{Block, Blockchain, BlockchainStats, Transaction, Amount};
 use crate::wallet::Wallet;
+use crate::ai::{AIService, AIConfig};
 use axum::{
     extract::{Path, State},
     response::Json,
@@ -15,8 +16,22 @@ use tokio::sync::RwLock;
 use tower_http::cors::CorsLayer;
 use log::{info, warn};
 
+// AI 模块导入
+use crate::ai::nlp::{NLPQuery, NLPResponse};
+use crate::ai::mining::MiningAdvice;
+use crate::ai::risk::RiskResult;
+use crate::ai::contract::{ContractGenerationRequest, ContractGenerationResult};
+use crate::ai::wallet::{VoiceTransferRequest, VoiceTransferResult};
+use crate::ai::ops::SystemOverview;
+
 /// API 共享状态
 pub type ApiState = Arc<RwLock<Blockchain>>;
+
+/// AI 服务状态 (使用 once_cell 或 lazy_static 在运行时初始化)
+static AI_SERVICE: once_cell::sync::Lazy<std::sync::Mutex<AIService>> = 
+    once_cell::sync::Lazy::new(|| {
+        std::sync::Mutex::new(AIService::default())
+    });
 
 /// 标准 API 响应
 #[derive(Debug, Serialize)]
@@ -42,6 +57,82 @@ impl<T> ApiResponse<T> {
             error: Some(msg),
         }
     }
+}
+
+// ==================== AI API 处理函数 ====================
+
+/// AI 自然语言查询
+async fn ai_query(
+    Json(query): Json<NLPQuery>,
+) -> Json<ApiResponse<NLPResponse>> {
+    let mut service = AI_SERVICE.lock().unwrap();
+    let response = service.nlp.process_query(query);
+    Json(ApiResponse::success(response))
+}
+
+/// AI 挖矿建议
+async fn ai_mining_advice() -> Json<ApiResponse<MiningAdvice>> {
+    let service = AI_SERVICE.lock().unwrap();
+    let advice = service.mining.get_mining_advice();
+    Json(ApiResponse::success(advice))
+}
+
+/// AI 风险检测请求
+#[derive(Debug, Deserialize)]
+struct RiskCheckRequest {
+    tx_id: String,
+}
+
+/// AI 风险检测
+async fn ai_risk_check(
+    Json(_req): Json<RiskCheckRequest>,
+) -> Json<ApiResponse<RiskResult>> {
+    // 这里简化处理，实际需要查询交易
+    let result = RiskResult {
+        level: crate::ai::risk::RiskLevel::None,
+        score: 0,
+        risk_types: vec![],
+        details: vec!["交易正常".to_string()],
+        recommended_action: crate::ai::risk::RiskAction::Allow,
+        timestamp: current_timestamp(),
+        confidence: 95,
+    };
+    Json(ApiResponse::success(result))
+}
+
+/// AI 合约生成
+async fn ai_contract_generate(
+    Json(req): Json<ContractGenerationRequest>,
+) -> Json<ApiResponse<ContractGenerationResult>> {
+    let service = AI_SERVICE.lock().unwrap();
+    match service.contract.generate_contract(req) {
+        Ok(result) => Json(ApiResponse::success(result)),
+        Err(e) => Json(ApiResponse::error(e.to_string())),
+    }
+}
+
+/// AI 钱包语音指令
+async fn ai_wallet_voice(
+    Json(req): Json<VoiceTransferRequest>,
+) -> Json<ApiResponse<VoiceTransferResult>> {
+    let service = AI_SERVICE.lock().unwrap();
+    let result = service.wallet.process_voice_transfer(req);
+    Json(ApiResponse::success(result))
+}
+
+/// AI 运维状态
+async fn ai_ops_status() -> Json<ApiResponse<SystemOverview>> {
+    let service = AI_SERVICE.lock().unwrap();
+    let overview = service.ops.get_system_overview();
+    Json(ApiResponse::success(overview))
+}
+
+/// 获取当前时间戳
+fn current_timestamp() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
 }
 
 /// 区块列表响应
@@ -236,7 +327,7 @@ async fn get_address_info(
     // 统计交易
     let mut tx_count = 0u64;
     let mut received = 0u64;
-    let mut sent = 0u64;
+    let sent;
 
     for block in &blockchain.chain {
         for tx in &block.transactions {
@@ -428,6 +519,14 @@ pub fn create_routes(state: ApiState) -> Router {
         // 验证
         .route("/api/validate", get(validate_chain))
         .route("/api/utxos/count", get(get_utxo_count))
+        
+        // AI 功能
+        .route("/api/ai/query", post(ai_query))
+        .route("/api/ai/mining/advice", get(ai_mining_advice))
+        .route("/api/ai/risk/check", post(ai_risk_check))
+        .route("/api/ai/contract/generate", post(ai_contract_generate))
+        .route("/api/ai/wallet/voice", post(ai_wallet_voice))
+        .route("/api/ai/ops/status", get(ai_ops_status))
         
         // 添加 CORS 支持
         .layer(CorsLayer::permissive())

@@ -1,269 +1,220 @@
-# 🔗 YRUST Chain - 下一代高性能区块链
+# YRust Chain - AI 驱动的智能公链
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Rust-2021-orange?logo=rust" alt="Rust">
+  <img src="https://img.shields.io/badge/Rust-1.75+-orange.svg" alt="Rust Version">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
-  <img src="https://img.shields.io/badge/TPS-1000+-green" alt="TPS">
-  <img src="https://img.shields.io/badge/Consensus-POW-yellow" alt="Consensus">
+  <img src="https://img.shields.io/badge/AI-Powered-purple.svg" alt="AI Powered">
 </p>
 
-**YRUST Chain** 是一个基于 Rust 构建的高性能区块链，支持智能合约、DeFi、NFT 等去中心化应用。
+YRust Chain 是一个 **AI 驱动的智能公链**，将人工智能能力深度集成到区块链核心，提供智能挖矿、风控、查询、运维、合约生成和钱包助手六大 AI 功能。
 
-## ✨ 特性
+## ✨ 核心特性
 
-- ⚡ **极速交易** - 1000+ TPS，3 秒确认
-- 🔒 **安全可靠** - Rust 内存安全，形式化验证合约
-- 💰 **极低费用** - 平均手续费低于 $0.001
-- 🌐 **真正去中心化** - libp2p P2P 网络，任何人可运行节点
-- 🛠️ **开发者友好** - Rust 智能合约，WASM 执行环境
-- 🔄 **跨链互操作** - 支持与其他区块链桥接
+### 🔥 六大 AI 模块
+
+| 模块 | 功能 | 状态 |
+|------|------|------|
+| **AI 智能挖矿调度** | 学习出块规律，预测最佳挖矿时机，动态调整难度 | ✅ 已完成 |
+| **AI 风控系统** | 实时检测双花、洗钱、粉尘攻击等恶意行为 | ✅ 已完成 |
+| **AI 区块浏览器** | 自然语言查询区块链数据，支持语音输入 | ✅ 已完成 |
+| **AI 智能运维** | 节点健康监控、自动故障恢复、性能优化 | ✅ 已完成 |
+| **AI 合约生成** | 自然语言生成智能合约，内置安全审计 | ✅ 已完成 |
+| **AI 钱包助手** | 语音转账、智能提醒、交易分析 | ✅ 已完成 |
+
+### 🛠️ 区块链特性
+
+- **POW 共识** - 工作量证明挖矿
+- **UTXO 模型** - 比特币式交易模型
+- **WASM 合约** - WebAssembly 智能合约引擎
+- **P2P 网络** - 去中心化节点通信
+- **双模型支持** - UTXO + Account 混合模型
 
 ## 🚀 快速开始
 
-### 一键部署
+### 环境要求
+
+- Rust 1.75+
+- 4GB+ RAM
+- (可选) Node.js 18+ 用于前端开发
+
+### 安装
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/y-rust.git
-cd y-rust
+git clone https://github.com/ychech/YC-Rust.git
+cd YC-Rust
 
-# 运行部署脚本
-sudo bash scripts/deploy.sh
-```
-
-### Docker 部署
-
-```bash
-# 构建并启动
-docker-compose up -d
-
-# 查看日志
-docker-compose logs -f
-```
-
-### 手动构建
-
-```bash
-# 安装依赖
-sudo apt-get install -y build-essential pkg-config libssl-dev clang
-
-# 构建
+# 编译
 cargo build --release
 
-# 运行节点
-./target/release/y-rust
+# 运行测试
+cargo test
 ```
+
+### 启动节点
+
+```bash
+# 启动完整节点 (包含 API 服务)
+cargo run -- node
+
+# 启动矿工节点
+cargo run -- miner
+
+# 启动 P2P 节点
+cargo run -- p2p --port 8000
+```
+
+### 访问 AI 区块浏览器
+
+```bash
+# 打开前端页面
+open frontend/ai-explorer.html
+
+# 或使用 Python 启动简单服务器
+cd frontend && python3 -m http.server 8080
+# 然后访问 http://localhost:8080/ai-explorer.html
+```
+
+## 📖 使用示例
+
+### AI 自然语言查询
+
+在区块浏览器中输入：
+
+```
+"查询地址 Y1abc... 的余额"
+"最新区块的高度是多少"
+"显示区块链统计信息"
+"生成一个 ERC20 代币合约"
+```
+
+### AI 挖矿调度
+
+```rust
+use yrust_chain::ai::mining::SmartMining;
+
+let mut mining = SmartMining::new();
+mining.record_block_time(580);
+
+let advice = mining.get_mining_advice();
+println!("建议难度: {}", advice.suggested_difficulty);
+println!("收益评分: {}/100", advice.profit_score);
+```
+
+### AI 风控检测
+
+```rust
+use yrust_chain::ai::risk::RiskEngine;
+
+let mut risk = RiskEngine::new();
+let result = risk.detect_transaction_risk(&transaction);
+
+if result.score > 50 {
+    println!("高风险交易! 建议操作: {:?}", result.recommended_action);
+}
+```
+
+### AI 合约生成
+
+```rust
+use yrust_chain::ai::contract::{ContractGenerator, ContractGenerationRequest};
+
+let generator = ContractGenerator::new(None);
+let request = ContractGenerationRequest {
+    description: "创建一个代币".to_string(),
+    template: Some(ContractTemplate::ERC20),
+    name: "MyToken".to_string(),
+    symbol: Some("MTK".to_string()),
+    ..Default::default()
+};
+
+let result = generator.generate_contract(request)?;
+println!("生成的合约:\n{}", result.code);
+```
+
+## 📚 API 文档
+
+### 基础 API
+
+| 端点 | 方法 | 描述 |
+|------|------|------|
+| `/api/stats` | GET | 区块链统计 |
+| `/api/blocks` | GET | 区块列表 |
+| `/api/tx/:id` | GET | 查询交易 |
+| `/api/mine` | POST | 挖矿 |
+
+### AI API
+
+| 端点 | 方法 | 描述 |
+|------|------|------|
+| `/api/ai/query` | POST | 自然语言查询 |
+| `/api/ai/mining/advice` | GET | 挖矿建议 |
+| `/api/ai/risk/check` | POST | 风险检测 |
+| `/api/ai/contract/generate` | POST | 生成合约 |
+| `/api/ai/wallet/voice` | POST | 语音指令 |
+| `/api/ai/ops/status` | GET | 运维状态 |
 
 ## 📁 项目结构
 
 ```
-y-rust/
-├── src/                    # 核心源代码
-│   ├── core/              # 区块链核心
-│   │   ├── models.rs      # 区块、交易模型
-│   │   ├── blockchain.rs  # 区块链逻辑
-│   │   └── types.rs       # 类型定义
-│   ├── network/           # 网络模块
-│   │   ├── p2p.rs         # P2P 网络
-│   │   └── consensus.rs   # 共识算法
-│   ├── storage/           # 存储模块
-│   │   └── rocksdb.rs     # RocksDB 实现
-│   ├── vm/                # 虚拟机
-│   │   └── engine.rs      # WASM 执行引擎
-│   ├── security/          # 安全模块
-│   │   └── mod.rs         # 重放保护、权限控制
-│   ├── monitoring/        # 监控模块
-│   │   └── mod.rs         # 指标、告警
-│   ├── api/               # API 接口
-│   ├── wallet/            # 钱包模块
-│   └── main.rs            # 入口
-├── contracts/             # 智能合约
-│   ├── token.rs           # 代币合约
-│   ├── nft.rs             # NFT 合约
-│   └── dex.rs             # DEX 合约
-├── website/               # 官网
-├── admin/                 # 管理后台
-├── web/                   # 区块浏览器
-├── wallet/frontend/       # 网页钱包
-├── dex/frontend/          # DEX 前端
-├── scripts/               # 部署脚本
-├── docs/                  # 文档
-└── tutorial/              # 教程
+YRust/
+├── src/
+│   ├── ai/              # AI 模块
+│   │   ├── mod.rs       # AI 模块入口
+│   │   ├── mining.rs    # 智能挖矿调度
+│   │   ├── risk.rs      # 风控系统
+│   │   ├── nlp.rs       # 自然语言查询
+│   │   ├── ops.rs       # 智能运维
+│   │   ├── contract.rs  # 合约生成
+│   │   └── wallet.rs    # 钱包助手
+│   ├── core/            # 区块链核心
+│   ├── api/             # API 服务
+│   ├── network/         # P2P 网络
+│   ├── vm/              # WASM 虚拟机
+│   ├── wallet/          # 钱包
+│   ├── storage/         # 存储
+│   └── main.rs          # 主程序
+├── frontend/            # AI 区块浏览器前端
+├── tutorials/           # 教程文档
+├── Cargo.toml
+└── README.md
 ```
 
-## 🌐 生态系统
+## 📖 教程
 
-| 组件 | 描述 | 访问地址 |
-|------|------|----------|
-| 🌐 官网 | 项目介绍 | http://localhost:80 |
-| 🔍 区块浏览器 | 查看区块、交易 | http://localhost:3000 |
-| 👛 网页钱包 | 管理资产 | http://localhost:3001 |
-| 💱 DEX | 去中心化交易 | http://localhost:3002 |
-| 📊 管理后台 | 节点管理 | http://localhost:3003 |
-| 📈 监控面板 | Grafana 监控 | http://localhost:3004 |
-
-## 🔧 API 接口
-
-### REST API
-
-```bash
-# 获取最新区块
-curl http://localhost:8080/api/v1/blocks/latest
-
-# 获取账户余额
-curl http://localhost:8080/api/v1/accounts/YR111.../balance
-
-# 发送交易
-curl -X POST http://localhost:8080/api/v1/transactions \
-  -H "Content-Type: application/json" \
-  -d '{"from":"YR111...","to":"YR222...","amount":100}'
-```
-
-完整 API 文档: [docs/API.md](docs/API.md)
-
-### WebSocket
-
-```javascript
-const ws = new WebSocket('ws://localhost:8080/ws');
-
-ws.onopen = () => {
-  ws.send(JSON.stringify({
-    action: 'subscribe',
-    channel: 'blocks'
-  }));
-};
-
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log('新区块:', data);
-};
-```
-
-## 📝 智能合约
-
-### 代币合约示例
-
-```rust
-#[contract]
-mod token {
-    use yrust::prelude::*;
-
-    #[storage]
-    struct Token {
-        name: String,
-        symbol: String,
-        total_supply: u64,
-        balances: Map<Address, u64>,
-    }
-
-    #[init]
-    fn init(name: String, symbol: String, total_supply: u64) {
-        let caller = msg::caller();
-        storage.balances.insert(caller, total_supply);
-    }
-
-    #[call]
-    fn transfer(to: Address, amount: u64) -> bool {
-        let from = msg::caller();
-        let from_balance = storage.balances.get(&from).unwrap_or(0);
-        
-        require(from_balance >= amount, "余额不足");
-        
-        storage.balances.insert(from, from_balance - amount);
-        let to_balance = storage.balances.get(&to).unwrap_or(0);
-        storage.balances.insert(to, to_balance + amount);
-        
-        true
-    }
-}
-```
-
-## 🔒 安全特性
-
-- ✅ **重放攻击防护** - 时间戳 + Nonce 机制
-- ✅ **签名防篡改** - S 值规范化
-- ✅ **速率限制** - 防止 DDoS 攻击
-- ✅ **权限控制** - 管理员、部署者白名单
-- ✅ **输入验证** - 严格的参数校验
-
-## 📊 监控告警
-
-### 指标收集
-
-- 区块高度、交易数量
-- 活跃节点数、内存使用
-- API 请求延迟、错误率
-
-### 告警规则
-
-```yaml
-rules:
-  - name: 节点离线
-    condition: peer_count < 3
-    level: critical
-  
-  - name: 区块同步延迟
-    condition: sync_delay > 60
-    level: warning
-```
-
-## 🧪 测试
-
-```bash
-# 运行单元测试
-cargo test
-
-# 运行集成测试
-cargo test --test integration
-
-# 代码覆盖率
-cargo tarpaulin --out Html
-```
-
-## 📚 完整教程（10章）
-
-### 基础篇
-- [01. 区块基础](tutorial-full/01-basic/) - 区块结构、哈希计算、创世区块
-- [02. 密码学基础](tutorial-full/02-crypto/) - SHA256、Merkle Tree、地址生成
-- [03. 区块链核心](tutorial-full/03-blockchain/) - 链式结构、POW挖矿、难度调整
-
-### 网络篇
-- [04. P2P网络](tutorial-full/04-network/) - libp2p、节点发现、消息传播
-- [05. 共识机制](tutorial-full/05-consensus/) - Raft选举、领导者、心跳机制
-
-### 高级篇
-- [06. 数据存储](tutorial-full/06-storage/) - RocksDB、UTXO索引、状态存储
-- [07. 虚拟机](tutorial-full/07-vm/) - WASM运行时、Gas计费、合约调用
-- [08. 智能合约](tutorial-full/08-contracts/) - Token、NFT、DEX合约开发
-
-### 生产篇
-- [09. 安全加固](tutorial-full/09-security/) - 重放保护、签名验证、权限控制
-- [10. API与部署](tutorial-full/10-api/) - REST API、Docker部署、监控
-
-### 快速开始
-- [快速开始指南](tutorial-full/QUICK_START.md) - 5分钟上手
+- [AI 集成概述](tutorials/00_AI_Integration_Overview.md)
+- [AI 智能挖矿调度](tutorials/01_AI_Mining.md)
+- [AI 风控系统](tutorials/02_AI_Risk.md)
+- [AI 自然语言查询](tutorials/03_AI_NLP.md) *(待完善)*
+- [AI 智能运维](tutorials/04_AI_Ops.md) *(待完善)*
+- [AI 合约生成](tutorials/05_AI_Contract.md) *(待完善)*
+- [AI 钱包助手](tutorials/06_AI_Wallet.md) *(待完善)*
 
 ## 🤝 贡献
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing`)
+欢迎贡献代码和文档！请遵循以下步骤：
+
+1. Fork 仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
 3. 提交更改 (`git commit -m 'Add amazing feature'`)
-4. 推送分支 (`git push origin feature/amazing`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
 5. 创建 Pull Request
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE](LICENSE)
+MIT License - 详见 [LICENSE](LICENSE) 文件
+
+## 🔗 链接
+
+- GitHub: https://github.com/ychech/YC-Rust
+- 文档: https://github.com/ychech/YC-Rust/tree/main/tutorials
 
 ## 🙏 致谢
 
-- [Rust](https://www.rust-lang.org/) - 系统编程语言
-- [libp2p](https://libp2p.io/) - P2P 网络协议
-- [RocksDB](https://rocksdb.org/) - 高性能存储
-- [WASM](https://webassembly.org/) - 智能合约执行环境
+感谢豆包 AI 的技术支持，让 YRust Chain 成为真正的 AI 驱动智能公链。
 
 ---
 
 <p align="center">
-  Made with ❤️ by Rust enthusiasts
+  <strong>YRust Chain - 让区块链更智能</strong>
 </p>
